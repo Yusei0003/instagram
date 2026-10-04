@@ -1,0 +1,80 @@
+/* カルーセル共通スタイル。値を変えるときは ../brand.md も更新する */
+@font-face { font-family: "Noto Sans JP"; font-weight: 400; src: url("../../../tools/fonts/NotoSansJP-400.ttf"); }
+@font-face { font-family: "Noto Sans JP"; font-weight: 700; src: url("../../../tools/fonts/NotoSansJP-700.ttf"); }
+@font-face { font-family: "Noto Sans JP"; font-weight: 900; src: url("../../../tools/fonts/NotoSansJP-900.ttf"); }
+
+:root {
+  --bg: #FAF7F2;
+  --ink: #1F2328;
+  --accent: #D9653B;
+  --left: #D9653B;
+  --right: #2F6FDB;
+  --muted: #6B7280;
+  --line: #E5DED3;
+  --handle: "@your_account";
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: #ccc;
+  font-family: "Noto Sans JP", "Hiragino Sans", "IPAGothic", sans-serif;
+  color: var(--ink);
+  display: flex; flex-direction: column; align-items: center; gap: 40px; padding: 40px 0;
+}
+
+.slide {
+  position: relative;
+  width: 1080px; height: 1350px;
+  background: var(--bg);
+  padding: 120px 96px;
+  display: flex; flex-direction: column; justify-content: center; gap: 48px;
+  overflow: hidden;
+}
+.slide::after {
+  content: var(--handle);
+  position: absolute; right: 96px; bottom: 56px;
+  font-size: 28px; color: var(--muted);
+}
+.slide .page {
+  position: absolute; right: 96px; top: 56px;
+  font-size: 28px; font-weight: 700; color: var(--muted);
+}
+.slide .label {
+  display: inline-block; align-self: flex-start;
+  background: var(--accent); color: #fff;
+  font-size: 32px; font-weight: 700; padding: 8px 24px; border-radius: 999px;
+}
+.slide h2 { font-size: 76px; font-weight: 900; line-height: 1.3; }
+.slide p, .slide li { font-size: 42px; line-height: 1.7; }
+.slide ul { list-style: none; display: flex; flex-direction: column; gap: 24px; }
+.slide li { padding-left: 1.2em; text-indent: -1.2em; }
+.slide li::before { content: "●"; color: var(--accent); margin-right: 0.4em; font-size: 0.7em; vertical-align: 0.15em; }
+.slide em { font-style: normal; color: var(--accent); font-weight: 700; }
+.slide .note { font-size: 30px; color: var(--muted); line-height: 1.6; }
+
+/* 1 枚目 */
+.slide.cover { background: var(--ink); color: #fff; justify-content: center; }
+.slide.cover h1 { font-size: 104px; font-weight: 900; line-height: 1.25; }
+.slide.cover h1 em { color: var(--accent); }
+.slide.cover p { color: #D1D5DB; font-size: 44px; }
+.slide.cover::after { color: #9CA3AF; }
+.slide.cover .page { color: #9CA3AF; }
+
+/* 左右比較 */
+.compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+.compare-grid .card { background: #fff; border-radius: 32px; padding: 48px 36px; border-top: 16px solid var(--left); }
+.compare-grid .card.right { border-top-color: var(--right); }
+.compare-grid .card h3 { font-size: 52px; font-weight: 900; margin-bottom: 24px; }
+.compare-grid .card p { font-size: 38px; line-height: 1.6; }
+
+/* まとめの表 */
+.slide table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 24px; overflow: hidden; }
+.slide th, .slide td { font-size: 36px; padding: 28px 24px; border-bottom: 2px solid var(--line); text-align: left; line-height: 1.4; }
+.slide th { background: var(--ink); color: #fff; font-weight: 700; }
+.slide tr:last-child td { border-bottom: none; }
+
+/* 最後 */
+.slide.end { background: var(--accent); color: #fff; text-align: center; align-items: center; }
+.slide.end h2 { font-size: 88px; }
+.slide.end p { font-size: 44px; }
+.slide.end::after, .slide.end .page { color: #FDE7DC; }

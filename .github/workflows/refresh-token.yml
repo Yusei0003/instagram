@@ -1,0 +1,34 @@
+name: Instagram トークンの延長
+
+# Instagram のアクセストークンは約 60 日で切れるので、毎月 1 日と 15 日に延長して
+# GitHub Secrets の IG_ACCESS_TOKEN を新しい値に置き換える。
+# Secrets を書き換えるために、GH_PAT（Secrets の書き込み権限があるトークン）が必要。
+
+on:
+  schedule:
+    - cron: "17 1 1,15 * *"
+  workflow_dispatch:
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - name: トークンを延長して保存する
+        env:
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+          REPO: ${{ github.repository }}
+        run: |
+          if [ -z "$IG_ACCESS_TOKEN" ] || [ -z "$GH_TOKEN" ]; then
+            echo "IG_ACCESS_TOKEN または GH_PAT が未設定のためスキップしました"
+            exit 0
+          fi
+          res=$(curl -fsS "https://graph.instagram.com/refresh_access_token?grant_type=ig_refresh_token&access_token=${IG_ACCESS_TOKEN}")
+          new=$(echo "$res" | jq -r '.access_token // empty')
+          if [ -z "$new" ]; then
+            echo "延長に失敗しました"
+            exit 1
+          fi
+          echo "::add-mask::$new"
+          gh secret set IG_ACCESS_TOKEN --repo "$REPO" --body "$new"
+          echo "延長しました（有効期限: 約 $(( $(echo "$res" | jq -r '.expires_in') / 86400 )) 日）"

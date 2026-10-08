@@ -1,0 +1,58 @@
+name: Instagram 投稿と数字の記録
+
+on:
+  schedule:
+    # 毎日 19:00（日本時間）= 10:00 UTC。GitHub の混雑で数分〜十数分遅れることがある
+    - cron: "0 10 * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "投稿せずに、何を投稿するかだけ確認する"
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+
+concurrency:
+  group: instagram-publish
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: 投稿する
+        env:
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+        run: |
+          if [ "${{ inputs.dry_run }}" = "true" ]; then
+            node tools/publish.mjs --dry-run
+          else
+            node tools/publish.mjs
+          fi
+
+      - name: 数字を記録する
+        if: ${{ inputs.dry_run != true }}
+        env:
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+        run: node tools/insights.mjs
+
+      - name: 結果をコミットする
+        if: ${{ always() && inputs.dry_run != true }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add posts .company/analytics
+          if git diff --cached --quiet; then
+            echo "変更なし"
+          else
+            git commit -m "投稿・数字の記録を更新（自動）"
+            git push
+          fi

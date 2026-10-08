@@ -1,4 +1,4 @@
-// 投稿フォルダの slides.html を 1 枚ずつ PNG に書き出す。
+// 投稿フォルダの slides.html を 1 枚ずつ JPEG に書き出す。
 // 使い方: node tools/render.mjs posts/2026-10-06-claude-vs-codex-01
 import { chromium } from "playwright";
 import { execFileSync } from "node:child_process";
@@ -25,7 +25,7 @@ execFileSync("bash", [join(root, "tools/setup-fonts.sh")], { stdio: "inherit" })
 const outDir = join(postDir, "images");
 mkdirSync(outDir, { recursive: true });
 for (const f of readdirSync(outDir)) {
-  if (f.endsWith(".png")) rmSync(join(outDir, f));
+  if (/\.(png|jpe?g)$/.test(f)) rmSync(join(outDir, f));
 }
 
 const browser = await chromium.launch();
@@ -36,8 +36,9 @@ await page.evaluate(() => document.fonts.ready);
 const slides = await page.$$(".slide");
 const problems = [];
 for (const [i, slide] of slides.entries()) {
-  const name = `${String(i + 1).padStart(2, "0")}.png`;
-  await slide.screenshot({ path: join(outDir, name) });
+  // Instagram API は JPEG のみ受け付ける
+  const name = `${String(i + 1).padStart(2, "0")}.jpg`;
+  await slide.screenshot({ path: join(outDir, name), type: "jpeg", quality: 95 });
   const overflow = await slide.evaluate((el) => el.scrollHeight > el.clientHeight || el.scrollWidth > el.clientWidth);
   if (overflow) problems.push(name);
   console.log(`書き出し: images/${name}`);

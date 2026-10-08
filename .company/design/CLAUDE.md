@@ -6,9 +6,9 @@
 1. `post.md` の「スライド文言」をもとに、投稿フォルダに `slides.html` を作る
    （`templates/slides-template.html` をコピーして中身を差し替える）
 2. 画像を書き出す：`node tools/render.mjs posts/<フォルダ名>`
-   → `images/01.png`, `02.png`… ができる（1080×1350px）
+   → `images/01.jpg`, `02.jpg`… ができる（1080×1350px、Instagram API 用に JPEG）
 3. 書き出した画像を自分で見て、文字のはみ出し・重なりがないか確認する
-4. status を「確認待ち」にして、秘書からオーナーに確認を頼む
+4. status を「確認待ち」にして、秘書の公開前チェックに回す
 
 ## スライドの種類（templates/slides.css のクラス）
 - `slide cover`：1 枚目。大きな問いかけ
